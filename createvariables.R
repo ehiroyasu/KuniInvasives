@@ -1,6 +1,6 @@
 #Create Variables
 
-kuni_df <- read.csv("kunisurvey_coded_march8.csv", h=T)
+kuni_df <- read.csv("kunisurvey_coded_march16.csv", h=T)
 View(kuni_df)
 
 #Independent Variables
@@ -12,6 +12,7 @@ View(kuni_df)
 #Environmental variables: NEP, animal rights
 
 #Demographic Variables
+attach(kuni_df)
 
 #Race
 white[is.na(white)] <- 0
@@ -84,7 +85,7 @@ animalrights <- (as.numeric(animals_suffering) + as.numeric(animals_displace) + 
 summary(animalrights) #mean=3.30, median=3.25
 
 #Replace blanks with zeros in treatments#
-attach(kuni_df)
+#attach(kuni_df)
 kuni_df$ecogain[kuni_df$ecogain==""] <- 0
 kuni_df$ecoloss[kuni_df$ecoloss==""] <- 0
 
@@ -96,6 +97,7 @@ kuni_df$treat_cat[econgain==1] <- "econgain"
 kuni_df$treat_cat[econloss==1] <- "econloss"
 kuni_df$treat_cat[control==1] <- "control"
 summary(as.factor(treat_cat)) 
+
 #Breakdown of treatments: 199 control, 194 ego-gain, 196 eco-loss, 194 econ-gain, 197 econ-loss
 
 #reference level
@@ -129,7 +131,7 @@ kuni_df$support_oppose[support_strength==1] <- 4
 kuni_df$support_oppose[oppose_strength==3] <- 1
 kuni_df$support_oppose[oppose_strength==2] <- 2
 kuni_df$support_oppose[oppose_strength==1] <- 3
-support_oppose <- support_oppose
+support_oppose <- kuni_df$support_oppose
 summary(support_oppose) #mean=4.07
 summary(as.factor(support_oppose)) #Breakdown: 1=110, 2=115, 3=42, 4=194, 5=367, 6=151
 hist(support_oppose) #skew toward positive end. could transform.
