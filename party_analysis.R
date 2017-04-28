@@ -1,17 +1,6 @@
 #Subgroup analyses
 require(Rmisc)
 
-#function to reduce the amount of coding to create dataframes
-df.function<-function(df, treat){
-  df$treat[ecogain==1] <- "ecogain"
-  df$treat[ecoloss==1] <- "ecoloss"
-  df$treat[econgain==1] <- "econgain"
-  df$treat[econloss==1] <- "econloss"
-  df$treat[control==1] <- "control"
-  
-  return(df)
-}
-
 #Party ID
 reps_df <- subset(kuni_df, partyid==1)
 attach(reps_df)

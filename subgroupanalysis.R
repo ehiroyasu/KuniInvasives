@@ -63,6 +63,8 @@ rep_ecosupport
 ind_ecosupport<-ecosupport_func(support=support_inds, treat=treat_inds)
 ind_ecosupport
 
+
+
 #FOR ECONOMIC
 econsupport_func<-function(support, treat){
   econsupport<-mean(support[treat=="econgain" | treat=="econloss"])
@@ -78,6 +80,8 @@ econsupport_func<-function(support, treat){
 dem_econsupport<-econsupport_func(support=support_dems, treat=treat_dems)
 rep_econsupport<-econsupport_func(support=support_reps, treat=treat_reps)
 ind_econsupport<-econsupport_func(support=support_inds, treat=treat_inds)
+
+
 
 
 #Environmentalism
