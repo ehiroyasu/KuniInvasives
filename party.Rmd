@@ -1,0 +1,40 @@
+---
+title: "PartyID"
+author: "Elizabeth Hiroyasu"
+date: "June 27, 2017"
+output: html_document
+---
+#PARTY ID
+
+#FOR GAIN
+mean(support_dems[treat_dems=="ecogain" | treat_dems=="econgain"]) - mean(support_dems[treat_dems=="control"])
+length(support_dems[treat_dems=="ecogain" | treat_dems=="econgain"])
+.14155 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/208)*.14155*(1-.14155))
+#ATE=.142, N=208, 95% CI is .094 - .189
+
+mean(support_reps[treat_reps=="ecogain" | treat_reps=="econgain"]) - mean(support_reps[treat_reps=="control"])
+length(support_reps[treat_reps=="ecogain" | treat_reps=="econgain"])
+.075 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/120)*.075*(1-.075))
+#ATE=.075, N=120, 95% CI is .028 - .122
+
+mean(support_inds[treat_inds=="ecogain" | treat_inds=="econgain"]) - mean(support_inds[treat_inds=="control"])
+length(support_inds[treat_inds=="ecogain" | treat_inds=="econgain"])
+.04276 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/93)*.04276*(1-.04276))
+#ATE=-.043, N=93, 95% CI is -.084 to -.002
+
+#FOR LOSS
+mean(support_dems[treat_dems=="ecoloss" | treat_dems=="econloss"]) - mean(support_dems[treat_dems=="control"])
+length(support_dems[treat_dems=="ecoloss" | treat_dems=="econloss"])
+(sd(support_dems[treat_dems=="ecogain" | treat_dems=="ecoloss"]))/sqrt(193) #SE=.0284
+.24344 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/199)*.24344*(1-.24344))
+#ATE=.243, N=199, 95% CI is .184 - .303
+
+mean(support_reps[treat_reps=="ecoloss" | treat_reps=="econloss"]) - mean(support_reps[treat_reps=="control"])
+length(support_reps[treat_reps=="ecoloss" | treat_reps=="econloss"])
+.136612 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/122)*.136612*(1-.136612))
+#ATE=.137, N=122, 95% CI is .076 - .198
+
+mean(support_inds[treat_inds=="ecoloss" | treat_inds=="econloss"]) - mean(support_inds[treat_inds=="control"])
+length(support_inds[treat_inds=="ecoloss" | treat_inds=="econloss"])
+.02371 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/92)*(.02371)*(1-.02371))
+#ATE=-.024, N=92, 95% CI is -.055 to -.007
