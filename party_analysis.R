@@ -111,6 +111,16 @@ ggplot(party.df, aes(x=treat_cat, y=ATE, fill=partyid)) +
   scale_fill_hue(name="Party", labels=c("Republican", "Democrat", "Unaffiliated")) +
   ggtitle("Treatment Effect by Party ID")
 
+#using boxplot instead
+ggplot(party.df, aes(x=partyid, y=ATE, fill=treat_cat)) +
+  geom_boxplot() +
+  geom_errorbar(aes(ymin=ATE-se, ymax=ATE+se),
+                width=.2, position=position_dodge(.9)) + ggtitle("Framing Effects by Party ID") +
+  xlab("Party ID") + ylab("Average Treatment Effect") +
+  scale_x_discrete(
+                   labels=c("Rep", "Dem", "Ind")) +
+  facet_grid(.~treat_cat)
+
 #potential major heterogeneous treatment effects: eco-loss for dems, eco-gain for reps, both econ for reps
 #republicans seem much more responsive to gain frames, dems somewhat more responsive to loss frames.
 #dems also much less responsive to control frame as compared to republicans
