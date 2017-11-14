@@ -1,0 +1,151 @@
+---
+title: "Environmentalist Analysis"
+author: "Elizabeth Hiroyasu"
+date: "June 27, 2017"
+output: html_document
+---
+This analysis examines the role of framing in invasive species management specifically for environmentalists versus non-environmentalists.
+
+```{r}
+require(Rmisc)
+library(ggplot2)
+kuni_df <- read.csv("kunisurvey_coded_march16.csv", h=T)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+attach(kuni_df)
+NEP <- (as.numeric(nep1) + (6-as.numeric(nep2_rev)) + (6-as.numeric(nep3_rev))
+        + as.numeric(nep4) + as.numeric(nep5))/5
+#summary(NEP) #mean=3.30, median=3.2; 25%=2.6, 75%=3.8
+hist(NEP) #pretty close to normally distributed
+#sd(na.omit(NEP))
+nep2 <- 6-nep2_rev
+nep3 <- 6-nep3_rev
+NEP_table <- cbind(nep1, nep2, nep3, nep4, nep5)
+
+#Environmentalism
+quantile(NEP, na.rm=T) #25%=2.6, 75%=3.8
+enviro_df <- subset(kuni_df, NEP>=3.8)
+nonenviro_df <- subset(kuni_df, NEP<=2.6)
+```
+
+#Environmentalists
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+attach(enviro_df)
+enviro_df<-df.treat(df=enviro_df, treat=treat_enviros)
+support_enviro <- as.numeric(project_support==1)
+summary(project_support)
+summary(logit_enviro <- glm(support_enviro ~ as.factor(treat_cat), data=enviro_df, family=binomial(link="logit"))) 
+envsupp.df<-treat_func(enviro_df)
+envsupp.df$type<-as.factor(1)
+```
+
+
+#Non-Environmentalists
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+attach(nonenviro_df)
+nonenviro_df<-df.function(df=nonenviro_df, treat=treat_nonenviro)
+support_nonenviro<-as.numeric(project_support==1)
+summary(project_support)
+nonenvsupp.df<-treat_func(nonenviro_df)
+nonenvsupp.df$type<-as.factor(2)
+
+
+theme_update(plot.title = element_text(hjust = 0.5))
+
+environmentalism.df<-rbind.data.frame(envsupp.df, nonenvsupp.df)
+ggplot(environmentalism.df, aes(x=treat_cat, y=ATE, fill=type)) + 
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=ATE-se, ymax=ATE+se),
+                width=.2, position=position_dodge(.9)) +
+  xlab("Treatment Category") + ylab("Average Treatment Effect")+
+  scale_fill_hue(name="Environmentalism", labels=c("Environmentalists", "Non-Environmentalists")) +
+  ggtitle("Treatment Effect by Environmental Identification")
+```
+
+#FOR POOLED ENVIRO/ECONOMIC
+mean(support_enviro[treat_enviro=="econgain" | treat_enviro=="econloss"])
+mean(support_enviro[treat_enviro=="control"])
+length(support_enviro[treat_enviro=="econgain" | treat_enviro=="econloss"])
+.002 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/146)*.002*(1-.002))
+#ATE=-.002, N=214, 95% CI is -.009 - .005
+
+mean(support_nonenviro[treat_nonenviro=="econgain" | treat_reps=="econloss"], na.rm=T)
+mean(support_nonenviro[treat_nonenviro=="control"], na.rm=T)
+length(support_nonenviro[treat_nonenviro=="econgain" | treat_nonenviro=="econloss"])
+.161 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/108)*.161*(1-.161))
+#ATE=.161, N=108, 95% CI is .092 - .230
+
+#FOR ENVIRO/ECOLOGICAL
+mean(support_enviro[treat_enviro=="ecogain" | treat_enviro=="ecoloss"])
+mean(support_enviro[treat_enviro=="control"])
+length(support_enviro[treat_enviro=="ecogain" | treat_enviro=="ecoloss"])
+.176 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/124)*.176*(1-.176))
+#ATE=.176, N=124, 95% CI is .109 - .243
+
+mean(support_nonenviro[treat_nonenviro=="ecogain" | treat_reps=="ecoloss"], na.rm=T)
+mean(support_nonenviro[treat_nonenviro=="control"], na.rm=T)
+length(support_nonenviro[treat_nonenviro=="ecogain" | treat_nonenviro=="ecoloss"])
+.230 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/131)*.230*(1-.230))
+#ATE=.230, N=108, 95% CI is .158 - .302
+
+
+mean(support_inds[treat_inds=="econgain" | treat_inds=="econloss"])
+mean(support_inds[treat_inds=="control"])
+length(support_inds[treat_inds=="econgain" | treat_inds=="econloss"])
+.113 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/85)*(.113)*(1-.113))
+#ATE=-.113, N=85, 95% CI is -.1803 to -.0457
+
+
+##GAIN AND LOSS##
+
+
+#Environmentalism
+quantile(NEP, na.rm=T) #25%=2.6, 75%=3.8
+enviro_df <- subset(kuni_df, NEP>=3.8)
+nonenviro_df <- subset(kuni_df, NEP<=2.6)
+
+attach(enviro_df)
+enviro_df$treat_enviro[ecogain==1] <- "ecogain"
+enviro_df$treat_enviro[ecoloss==1] <- "ecoloss"
+enviro_df$treat_enviro[econgain==1] <- "econgain"
+enviro_df$treat_enviro[econloss==1] <- "econloss"
+enviro_df$treat_enviro[control==1] <- "control"
+attach(enviro_df)
+support_enviro <- as.numeric(project_support==1)
+summary(project_support)
+summary(logit_enviro <- glm(support_enviro ~ as.factor(treat_enviro), data=enviro_df, family=binomial(link="logit"))) 
+#eco-loss positive, sig
+#eco-gain positive but marginal
+#econ are both negative but non-sig
+
+#FOR GAIN
+mean(support_enviro[treat_enviro=="ecogain" | treat_enviro=="econgain"]) - mean(support_enviro[treat_enviro=="control"])
+length(support_enviro[treat_enviro=="ecogain" | treat_enviro=="econgain"])
+.045 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/136)*.045*(1-.045))
+#ATE=.045, N=136, 95% CI is .010 - .080
+
+mean(support_nonenviro[treat_nonenviro=="ecogain" | treat_reps=="econgain"], na.rm=T) - mean(support_nonenviro[treat_nonenviro=="control"], na.rm=T)
+length(support_nonenviro[treat_nonenviro=="ecogain" | treat_nonenviro=="econgain"])
+.19627 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/124)*.19627*(1-.19627))
+#ATE=.196, N=124, 95% CI is .126 - .266
+
+#FOR LOSS
+mean(support_enviro[treat_enviro=="ecoloss" | treat_enviro=="econloss"]) - mean(support_enviro[treat_enviro=="control"])
+length(support_enviro[treat_enviro=="ecoloss" | treat_enviro=="econloss"])
+.115 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/134)*.115*(1-.115))
+#ATE=.115, N=134, 95% CI is .061 - .169
+
+mean(support_nonenviro[treat_nonenviro=="econloss" | treat_reps=="ecoloss"], na.rm=T) - mean(support_nonenviro[treat_nonenviro=="control"], na.rm=T)
+length(support_nonenviro[treat_nonenviro=="econloss" | treat_nonenviro=="ecoloss"])
+.2502 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/115)*.2502*(1-.2502))
+#ATE=.250, N=115, 95% CI is .171 - .329
+
+
+mean(support_inds[treat_inds=="econgain" | treat_inds=="econloss"])
+mean(support_inds[treat_inds=="control"])
+length(support_inds[treat_inds=="econgain" | treat_inds=="econloss"])
+.113 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/85)*(.113)*(1-.113))
+#ATE=-.113, N=85, 95% CI is -.1803 to -.0457
+
+
