@@ -1,0 +1,132 @@
+\documentclass{article}
+\usepackage{dcolumn}
+\usepackage{graphicx}
+\usepackage{extsizes}
+
+
+\newcommand{\rowgroup}[1]{\hspace{-1em}#1}
+
+\begin{document}
+	
+%%%%%%%%%%%%
+
+%Descriptive Stats%
+
+\begin{table}[!htbp] \centering 
+  \caption{Sample Demographics} 
+  \label{} 
+    \resizebox{.4\textwidth}{!}{
+\begin{tabular}{>{\quad}lc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+  \multicolumn{1}{l}{Statistic} & \multicolumn{1}{c}{Percent} \\ 
+ \hline \\[-1.8ex] 
+ \rowgroup{Age} \\ 
+ 18-25 yrs & 16.5$\%$ \\
+  26-35 yrs & 23.8$\%$ \\
+  36-50 yrs & 22.0$\%$ \\
+  51-65 yrs & 25.1$\%$ \\
+  $>$65 yrs & 16.1$\%$ \\
+  \rowgroup{Gender} \\
+    Male & 36.2$\%$ \\ 
+    Female & 63.8$\%$ \\ 
+ \rowgroup{Household Income} \\
+  $<$$\$$40,000 & 35.7$\%$  \\ 
+  $\$$40,000-75,000 & 25.1$\%$ \\ 
+  $\$$75,000-150,000 & 24.9$\%$ \\ 
+  $>$$\$$150,000 & 14.4$\%$ \\ 
+ \rowgroup{Education} \\
+  HS Grad or Less & 13.8$\%$ \\ 
+  Some College & 40.6$\%$ \\ 
+  Bachelor's Degree & 30.6$\%$ \\ 
+  Advanced Degree & 15.1$\%$ \\ 
+  \rowgroup{Race} \\
+   Non-Hispanic White & 56.2$\%$ \\ 
+   Hispanic & 20.1$\%$ \\
+   Asian & 17.3$\%$ \\
+   Black & 5.9$\%$ \\
+   American Indian & 3.7$\%$ \\
+ \rowgroup{Household Location} \\
+ Rural &  24.1$\%$ \\ 
+ Urban$/$Suburban & 75.9$\%$ \\ 
+\rowgroup{Party ID} \\
+Democrat & 47.8$\%$ \\
+Republican & 28$\%$ \\
+Independent & 24.1$\%$ \\
+\hline \\[-1.8ex] 
+\end{tabular} 
+}
+\end{table} 
+
+%Predicted Probabilities%
+
+\begin{table}[!htbp] \centering 
+  \caption{Effects of Treatments and Covariates on the Predicted Probability of Support for Wild Pig Management in California} 
+  \label{} 
+               \resizebox{\textwidth}{!}{%
+\begin{tabular}{>{\quad}lcc}
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Treatment$/$Covariate & Predicted Probability  & $\Delta$ \\ 
+\hline \\[-1.8ex] 
+\rowgroup{Treatment Condition} \\
+Control & .644 & - \\ 
+Ecological Loss & .849 & .205 \\ 
+Ecological Gain & .791 & .147 \\ 
+Economic Loss & .751 & .107 \\ 
+Economic Gain$^*$ & .709 & .065 \\ 
+& & \\
+\rowgroup{Animal Welfare Support} \\
+ High Support & .658 & \\ 
+ Low Support &  .815 & .157 \\ 
+ & & \\
+\rowgroup{Gender} \\
+ Female & .703 & \\ 
+ Male & .819 & .116 \\ 
+\hline \\[-1.8ex] 
+\multicolumn{3}{l}{{\footnotesize Results are predicted probabilities at specific levels for each listed treatment or}} \\
+\multicolumn{3}{l}{{\footnotesize covariate, while holding other covariates at their means. $\Delta$ of predicted probabilities}} \\ 
+\multicolumn{3}{l}{{\footnotesize for treatments is in relation to control. For animal welfare and gender, treatments are}} \\
+\multicolumn{3}{l}{{\footnotesize excluded from the model in order to include all observations. To estimate animal welfare,}} \\
+\multicolumn{3}{l}{{\footnotesize High$=$top decile, Low$=$bottom decile.}} \\
+\multicolumn{3}{l}{{\footnotesize $^*$Economic gain treatment not significant at p$<$.05 in logit model.}} \\
+
+\end{tabular}
+} 
+\end{table} 
+
+%Heterogeneous Treatment Effects - Party ID%
+
+\begin{table}[!htbp] \centering 
+  \caption{Heterogeneous Treatment Effects} 
+  \label{} 
+               \resizebox{\textwidth}{!}{%
+\begin{tabular}{>{\quad}lccc}
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Subgroup & ATE  & {95$\%$ CI} & N \\ 
+\hline \\[-1.8ex] 
+\rowgroup{Ecological Treatments (Pooled)} \\
+Democrat & .253 & .192, .314 & 253 \\ 
+Republican & .113 & .058, .168 & 127 \\ 
+Independent & .035 & -.001, .071 & 100 \\
+& & \\
+Enviromentalist & .176 & .109, .243 & 124 \\ 
+Non-Environmentalist & .230 & .158, .302 & 131 \\ 
+& & \\
+\rowgroup{Economic Treatments (Pooled)} \\
+Democrat & .136 & .090, .182 & 214 \\ 
+Republican & .099 & .044, .154 & 115 \\ 
+Independent & -.113 & -.180, -.046 & 85 \\ 
+ & & \\
+Enviromentalist & -.002 & -.009, .005 & 146 \\ 
+Non-Environmentalist & .161 & .092, .230 & 108 \\ 
+& & \\
+\hline \\[-1.8ex] 
+\multicolumn{3}{l}{{\footnotesize Results are predicted probabilities at specific levels for each listed treatment or}} \\
+\end{tabular}
+} 
+\end{table} 
+
+
+\end{document}

@@ -1,0 +1,15 @@
+---
+title: "The role of values in determining support for IS Management"
+author: "Elizabeth Hiroyasu"
+date: "November 14, 2017"
+output: html_document
+---
+
+#The role of values as a determinant of support for Invasive Species Management Policies
+
+This code explores the role of environmental values, biospherism, egoism, and altruism as a determinant of who support environmental values.
+
+```{r setup, include=FALSE}
+kuni_df<-read.csv("Kuni_Data_11_14_IncValues.csv", header=T)
+```
+
