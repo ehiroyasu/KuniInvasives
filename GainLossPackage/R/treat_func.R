@@ -22,7 +22,8 @@ treat_func<-function(df){
   ATE=c(mean(econgain)-mean(control), mean(econloss)-mean(control), 
         mean(ecogain)-mean(control), mean(ecoloss)-mean(control))
   treat_cat = c("Econ Gain", "Econ Loss", "Ecol Gain", "Ecol Loss")
-  se = c(sd(econgain)/sqrt(length(econgain)), sd(econloss)/sqrt(length(econloss)),
+  se = c(sd(econgain)/sqrt(length(econgain)), 
+         sd(econloss)/sqrt(length(econloss)),
          sd(ecogain)/sqrt(length(ecogain)),
          sd(ecoloss)/sqrt(length(ecoloss)))
   
