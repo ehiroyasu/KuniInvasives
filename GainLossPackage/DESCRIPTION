@@ -1,4 +1,4 @@
-Package: GainLossPackag
+Package: GainLossPackage
 Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
 Authors@R: person("Elizabeth", "Hiroyasu", email = "ehiroyasu@bren.ucsb.edu", role = c("aut", "cre"))
@@ -7,3 +7,4 @@ Depends: R (>= 3.3.3)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1
