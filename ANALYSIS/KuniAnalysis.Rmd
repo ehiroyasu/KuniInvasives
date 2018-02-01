@@ -12,7 +12,7 @@ Environmental managers face major challenges related to not only how to implemen
 ```{r setup, echo=FALSE}
  library(devtools)
  library(roxygen2)
- load_all("GainLossPackage")
+ load_all("./GainLossPackage")
  library(GainLossPackage)
 ```
 
@@ -21,6 +21,18 @@ Environmental managers face major challenges related to not only how to implemen
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 source("KuniSource.R")
 ```
+###Primary Analysis Using:
+1. Project Support (binary)
+2. Strength of Support from 1 (strongly oppose) to 6 (strongly support)
+3. Write letter to CDFW (still need to figure out coding for this)
+
+##binary support
+```{r}
+support_binary <- as.numeric(project_support==1)
+kuni.treat.df$support_binary <- support_binary
+summary(as.factor(support_binary)) #786 support, 291 oppose; 72.98% of people support
+```
+
 
 ##Independent Variables
 Primary Analysis Using the Following:
@@ -45,6 +57,32 @@ summary(as.factor(kuni.treat.df$gainloss))
 treat_factor <- as.factor(kuni.treat.df$treat)
 kuni.treat.df<- within(kuni.treat.df, treat<- relevel(treat_factor, ref = "control"))
 ```
+
+##Strength of support/opposition
+```{r}
+
+kuni.treat.df$support_oppose[support_strength==1] <- 6
+kuni.treat.df$support_oppose[support_strength==2] <- 5
+kuni.treat.df$support_oppose[support_strength==3] <- 4
+kuni.treat.df$support_oppose[oppose_strength==1] <- 3
+kuni.treat.df$support_oppose[oppose_strength==2] <- 2
+kuni.treat.df$support_oppose[oppose_strength==3] <- 1
+
+summary(kuni.treat.df$support_oppose) #mean=4.16
+summary(as.factor(kuni.treat.df$support_oppose)) #Breakdown: 1=118, 2=128, 3=45, 4=173, 5=399, 6=213
+hist(kuni.treat.df$support_oppose) #skew toward positive end. could transform.
+support_oppose2 <- kuni.treat.df$support_oppose**2 #transform for normality
+hist(support_oppose2)
+summary(as.factor(support_strength))
+
+#for just support
+kuni_df$support_strength2[support_strength==1] <- 3
+kuni_df$support_strength2[support_strength==2] <- 2
+kuni_df$support_strength2[support_strength==3] <- 1
+head(kuni_df)
+```
+
+
 
 ##Demographic Variables
 #Race
@@ -226,3 +264,9 @@ animals_table <- cbind(animals_suffering, animals_displace, animals_veg, human_r
 alpha(animals_table) #alpha=.61, pretty poor internal reliability when all four included
 sd(animalrights, na.rm=T)
 ```
+
+```{r, echo=FALSE}
+#Saving the kuni.treat.df for later use
+write.csv(kuni.treat.df, file="Kuni_treat_df.csv")
+```
+
