@@ -2,39 +2,195 @@
 title: "PartyID"
 author: "Elizabeth Hiroyasu"
 date: "June 27, 2017"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
-#PARTY ID
+This analysis examines the role of party identity in determining support for invasive species management.
 
-#FOR GAIN
-mean(support_dems[treat_dems=="ecogain" | treat_dems=="econgain"]) - mean(support_dems[treat_dems=="control"])
-length(support_dems[treat_dems=="ecogain" | treat_dems=="econgain"])
-.14155 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/208)*.14155*(1-.14155))
-#ATE=.142, N=208, 95% CI is .094 - .189
+```{r setup, echo=FALSE}
+ library(devtools)
+ library(roxygen2)
+ load_all("GainLossPackage")
+ library(GainLossPackage)
+ 
+ source("KuniSource.R")
+ kuni.treat.df<-read.csv("./data/Processed/Kuni_treat_df.csv", header=TRUE)
+```
 
-mean(support_reps[treat_reps=="ecogain" | treat_reps=="econgain"]) - mean(support_reps[treat_reps=="control"])
-length(support_reps[treat_reps=="ecogain" | treat_reps=="econgain"])
-.075 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/120)*.075*(1-.075))
-#ATE=.075, N=120, 95% CI is .028 - .122
+#Categorical and Pooled data on Treatments
+```{r warning=FALSE, message=FALSE}
+summary(as.factor(kuni.treat.df$treat))
+summary(as.factor(kuni.treat.df$ecoecon)) 
+summary(as.factor(kuni.treat.df$gainloss))
 
-mean(support_inds[treat_inds=="ecogain" | treat_inds=="econgain"]) - mean(support_inds[treat_inds=="control"])
-length(support_inds[treat_inds=="ecogain" | treat_inds=="econgain"])
-.04276 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/93)*.04276*(1-.04276))
-#ATE=-.043, N=93, 95% CI is -.084 to -.002
+#reference level
+treat_factor <- as.factor(kuni.treat.df$treat)
+kuni.treat.df<- within(kuni.treat.df, treat<- relevel(treat_factor, ref = "control"))
+```
 
-#FOR LOSS
-mean(support_dems[treat_dems=="ecoloss" | treat_dems=="econloss"]) - mean(support_dems[treat_dems=="control"])
-length(support_dems[treat_dems=="ecoloss" | treat_dems=="econloss"])
-(sd(support_dems[treat_dems=="ecogain" | treat_dems=="ecoloss"]))/sqrt(193) #SE=.0284
-.24344 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/199)*.24344*(1-.24344))
-#ATE=.243, N=199, 95% CI is .184 - .303
+##Subsetting the data by party
+```{r}
+reps_df <- subset(kuni.treat.df, partyid==1)
+summary(reps_df$treat)
 
-mean(support_reps[treat_reps=="ecoloss" | treat_reps=="econloss"]) - mean(support_reps[treat_reps=="control"])
-length(support_reps[treat_reps=="ecoloss" | treat_reps=="econloss"])
-.136612 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/122)*.136612*(1-.136612))
-#ATE=.137, N=122, 95% CI is .076 - .198
+dems_df <- subset(kuni.treat.df, partyid==2)
+summary(dems_df$treat)
 
-mean(support_inds[treat_inds=="ecoloss" | treat_inds=="econloss"]) - mean(support_inds[treat_inds=="control"])
-length(support_inds[treat_inds=="ecoloss" | treat_inds=="econloss"])
-.02371 + c(-qnorm(0.975),qnorm(0.975))*sqrt((1/92)*(.02371)*(1-.02371))
-#ATE=-.024, N=92, 95% CI is -.055 to -.007
+inds_df <- subset(kuni.treat.df, partyid==3)
+summary(inds_df$treat)
+```
+
+##Republican Support
+```{r, echo=FALSE, warnings=FALSE, message=FALSE}
+rep_summary<-treatment_effect(reps_df)
+summary(rep_support<-rep_summary$support_vec)#This is different from what alex found (0.764)
+summary(rep_summary$ecogain)#Alex= #0.793
+summary(rep_summary$ecoloss)# Alex= 0.833
+summary(rep_summary$econgain)#Alex=0.732
+summary(rep_summary$econloss)#Alex=0.793
+summary(rep_summary$control)#Alex=0.660
+#Ordering: eco-loss, econ-loss & eco-gain (tied), econ-gain, control
+
+rep_chi<-chisq.test(rep_support, reps_df$treat) #not significant
+rep_chi
+p.adjust(rep_chi$p.value, method="bonferroni", n=3)
+
+rep_summary_df<-rep_summary$te.df
+rep_summary_df$party<-rep("reps", dim(rep_summary_df)[1])
+
+summary(logit_reps <- glm(project_support==1 ~ as.factor(reps_df$treat), data=reps_df, family=binomial(link="logit")))
+```
+
+##Democratic Support
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+dem_summary<-treatment_effect(dems_df)
+summary(dem_support<-dem_summary$support_vec) #0.697 is overall number
+summary(dem_summary$ecogain) #Alex=0.733
+summary(dem_summary$ecoloss)#Alex=0.885
+summary(dem_summary$econgain)#Alex=0.643
+summary(dem_summary$econloss)#Alex=0.702
+summary(dem_summary$control)#Alex=0.558
+#Ordering: eco-loss, eco-gain, econ-loss, econ-gain, control
+
+dem_chi<-chisq.test(dem_support, dems_df$treat)
+dem_chi
+p.adjust(dem_chi$p.value, method="bonferroni", n=3)
+
+dem_summary_df<-dem_summary$te.df
+dem_summary_df$party<-rep("dem", dim(dem_summary_df)[1])
+
+summary(logit_dems <- glm(project_support==1 ~ as.factor(treat), data=dems_df, family=binomial(link="logit"))) 
+```
+
+##Independent Support
+```{r echo=FALSE}
+ind_summary<-treatment_effect(inds_df)
+summary(ind_support<-ind_summary$support_vec)#0.746 is overall number
+summary(ind_summary$ecogain)#Alex=0.818
+summary(ind_summary$ecoloss)#Alex=0.837
+summary(ind_summary$econgain)#Alex=0.600
+summary(ind_summary$econloss)#Alex=0.720
+summary(ind_summary$control)#Alex=0.714
+#Ordering: eco-loss, eco-gain, econ-loss, control, econ-gain
+
+ind_chi<-chisq.test(ind_support, inds_df$treat)
+ind_chi
+p.adjust(ind_chi$p.value, method="bonferroni", n=3)
+
+ind_summary_df<-ind_summary$te.df
+ind_summary_df$party<-rep("ind", dim(ind_summary_df)[1])
+
+summary(logit_inds <- glm(project_support==1 ~ as.factor(treat), data=inds_df, family=binomial(link="logit"))) 
+```
+
+##Plotting al parties together
+```{r echo=FALSE}
+theme_update(plot.title = element_text(hjust = 0.5))
+party.df<-rbind.data.frame(rep_summary_df, dem_summary_df, ind_summary_df)
+
+ggplot(party.df, aes(x=treat_cat, y=ATE, fill=party)) + 
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=ATE-se, ymax=ATE+se),
+                width=.2, position=position_dodge(.9)) +
+  xlab("Treatment Category") + ylab("Average Treatment Effect")+
+  scale_fill_hue(name="Party", labels=c("Republican", "Democrat", "Unaffiliated")) +
+  ggtitle("Treatment Effect by Party ID")
+
+#using boxplot instead
+ggplot(party.df, aes(x=party, y=ATE, fill=treat_cat)) +
+  geom_boxplot() +
+  geom_errorbar(aes(ymin=ATE-se, ymax=ATE+se),
+                width=.2, position=position_dodge(.9)) + ggtitle("Framing Effects by Party ID") +
+  xlab("Party ID") + ylab("Average Treatment Effect") +
+  scale_x_discrete(
+                   labels=c("Rep", "Dem", "Ind")) +
+  facet_grid(.~treat_cat)
+
+```
+Potential major heterogeneous treatment effects: eco-loss for dems, eco-gain for reps, both econ for reps.
+Republicans seem much more responsive to gain frames, dems somewhat more responsive to loss frames. Dems also much less responsive to control frame as compared to republicans. Independents seems somewhere in between.
+
+##Pooled Ecological Treatments
+*note that the support_func that generates these results uses the following calculation to generate the ci:
+ ci<-ATE + c(-qnorm(0.975),qnorm(0.975))*sqrt(abs((1/N)*ATE*(1-ATE)))
+```{r}
+rep_ecosupport<-support_func(rep_support, treat.type=c("ecogain", "ecoloss", "control"), reps_df)
+rep_ecosupport
+
+dem_ecosupport<-support_func(dem_support, treat.type=c("ecogain", "ecoloss", "control"), dems_df)
+dem_ecosupport
+
+ind_ecosupport<-support_func(ind_support, treat.type=c("ecogain", "ecoloss", "control"), inds_df)
+ind_ecosupport
+```
+
+
+
+##Pooled Economic treatments
+```{r}
+rep_econsupport<-support_func(rep_support, treat.type=c("econgain", "econloss", "control"), reps_df)
+rep_econsupport
+
+dem_econsupport<-support_func(dem_support, treat.type=c("econgain", "econloss", "control"), dems_df)
+dem_econsupport
+
+ind_econsupport<-support_func(ind_support, treat.type=c("econgain", "econloss", "control"), inds_df)
+ind_econsupport
+```
+
+
+
+##Pooled Gain Treatments
+```{r}
+rep_gainsupport<-support_func(rep_support, treat.type=c("ecogain", "econgain", "control"), reps_df)
+#Alex: ATE=.075, N=120, 95% CI is .028 - .122
+rep_gainsupport
+
+dem_gainsupport<-support_func(dem_support, treat.type=c("ecogain", "econgain", "control"), dems_df)
+#Alex: ATE=.142, N=208, 95% CI is .094 - .189
+dem_gainsupport
+
+inds_gainsupport<-support_func(ind_support, treat.type=c("ecogain", "econgain", "control"), inds_df)
+#Alex: ATE=-.043, N=93, 95% CI is -.084 to -.002
+inds_gainsupport
+```
+
+
+
+##Pooled Loss Treatments
+```{r}
+rep_loss<-support_func(rep_support, treat.type=c("ecoloss", "econloss", "control"), reps_df)
+#Alex: ATE=.137, N=122, 95% CI is .076 - .198
+rep_loss
+
+dem_loss<-support_func(dem_support, treat.type=c("ecoloss", "econloss", "control"), dems_df)
+#Alex: ATE=.243, N=199, 95% CI is .184 - .303
+dem_loss
+
+ind_loss<-support_func(ind_support, treat.type=c("ecoloss", "econloss", "control"), inds_df)
+#Alex: ATE=-.024, N=92, 95% CI is -.055 to -.007
+ind_loss
+```
+
+
