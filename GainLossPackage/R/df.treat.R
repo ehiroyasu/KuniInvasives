@@ -9,7 +9,7 @@
 
 
 df.treat<-function(df){
-  attach(df)
+
   #separating by each treatment type
   df$treat[ecogain==1] <- "ecogain"
   df$treat[ecoloss==1] <- "ecoloss"
@@ -26,6 +26,6 @@ df.treat<-function(df){
   df$gainloss[ecogain==1 | econgain==1] <- "gain"
   df$gainloss[ecoloss==1 | econloss==1] <- "loss"
   df$gainloss[control==1] <- "control"
-  
+
   return(df)
 }
