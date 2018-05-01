@@ -114,7 +114,7 @@ ggplot(party.df, aes(x=treat_cat, y=ATE, fill=party)) +
   geom_errorbar(aes(ymin=ATE-se, ymax=ATE+se),
                 width=.2, position=position_dodge(.9)) +
   xlab("Treatment Category") + ylab("Average Treatment Effect")+
-  scale_fill_hue(name="Party", labels=c("Republican", "Democrat", "Unaffiliated")) +
+  #scale_fill_hue(name="Party", labels=c("Dem", "Ind", "Rep")) +
   ggtitle("Treatment Effect by Party ID")
 
 #using boxplot instead
@@ -123,8 +123,7 @@ ggplot(party.df, aes(x=party, y=ATE, fill=treat_cat)) +
   geom_errorbar(aes(ymin=ATE-se, ymax=ATE+se),
                 width=.2, position=position_dodge(.9)) + ggtitle("Framing Effects by Party ID") +
   xlab("Party ID") + ylab("Average Treatment Effect") +
-  scale_x_discrete(
-                   labels=c("Rep", "Dem", "Ind")) +
+  #scale_x_discrete(labels=c("Rep", "Dem", "Ind")) +
   facet_grid(.~treat_cat)
 
 ```
